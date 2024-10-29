@@ -1,0 +1,1 @@
+g++ webcat.cpp -o webcat -std=c++20 -Wall -O3 -static -s -Iinc
