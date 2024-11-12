@@ -7,7 +7,7 @@
 #include <cstdint>
 
 #define GAR_ABC
-#include <ctk-0.5/ctk.cpp>
+#include <ctk-0.9/ctk.cpp>
 
 void panic(const char* format, ...) {
 	va_list args;
@@ -33,7 +33,6 @@ char* get_arg(const char* name, ar<char*> args) {
 		next_arg:
 		continue;
 	}
-	panic("arg '%s' not found", name);
 	return nullptr;
 }
 
@@ -78,14 +77,26 @@ int main(int argc, char** argv) {
 	const char* css_path = get_arg("css", args);
 	const char* js_path = get_arg("js", args);
 	gar<char> main_data = load_file(main_path);
-	gar<char> html_data = load_file(html_path);
-	gar<char> css_data = load_file(css_path);
-	gar<char> js_data = load_file(js_path);
-	replace(&main_data, "%APP_NAME%", app_name);
-	replace(&main_data, "%APP_DESC%", app_desc);
-	replace(&main_data, "%APP_URL%", app_url);
-	replace(&main_data, "%INLINE_HTML%", html_data.buf);
-	replace(&main_data, "%INLINE_CSS%", css_data.buf);
-	replace(&main_data, "%INLINE_JS%", js_data.buf);
+	if (app_name != nullptr) {
+		replace(&main_data, "%APP_NAME%", app_name);
+	}
+	if (app_desc != nullptr) {
+		replace(&main_data, "%APP_DESC%", app_desc);
+	}
+	if (app_url != nullptr) {
+		replace(&main_data, "%APP_URL%", app_url);
+	}
+	if (html_path != nullptr) {
+		gar<char> html_data = load_file(html_path);
+		replace(&main_data, "%INLINE_HTML%", html_data.buf);
+	}
+	if (css_path != nullptr) {
+		gar<char> css_data = load_file(css_path);
+		replace(&main_data, "%INLINE_CSS%", css_data.buf);
+	}
+	if (js_path != nullptr) {
+		gar<char> js_data = load_file(js_path);
+		replace(&main_data, "%INLINE_JS%", js_data.buf);
+	}
 	fputs(main_data.buf, stdout);
 }
